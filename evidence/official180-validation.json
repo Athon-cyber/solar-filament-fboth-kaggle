@@ -1,0 +1,16 @@
+{
+  "scope": "unlabeled official test images; no labels loaded",
+  "photos": 180,
+  "rows": 1112,
+  "empty_photos": 1,
+  "unique_ids": true,
+  "contiguous_ids": true,
+  "zero_overlap": true,
+  "rle_roundtrip": true,
+  "sha256": "67de28e92ba4244ffda81630decb9fb689bb51d12d1b765a6376a74cfc7e7842",
+  "confidence": 0.9,
+  "pixel": 0.4,
+  "model_run": "20261018-opt030-v5-f-repair-supervisor-F-BOTH-gpu7-train",
+  "model_checkpoint_sha256": "0f6d4bb62ecfa34ded12e73afc42572748e5626c3a306efb05ce535a454b80f0",
+  "kaggle_upload": false
+}

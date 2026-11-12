@@ -1,0 +1,23 @@
+{
+  "evaluator_id": "local-pq-v1-cardinality-then-iou-empty-perfect",
+  "notebook_evaluator_id": "kaggle-self-evaluation-v6-allhits-micro-empty0",
+  "official_notebook_pq": 0.45930145134699757,
+  "local_pq_micro": 0.4591015748756099,
+  "local_pq_photo_macro": 0.46707678912772155,
+  "local_pq_reference_macro": 0.46585854875823796,
+  "sq_reference_macro": 0.6715343864763172,
+  "rq_reference_macro": 0.692215992798445,
+  "tp": 1590,
+  "fp": 662,
+  "fn": 836,
+  "notebook_tp": 1591,
+  "notebook_fp": 662,
+  "notebook_fn": 835,
+  "photos": 148,
+  "references": 372,
+  "prediction_instances": 900,
+  "fragments": 52,
+  "merges": 54,
+  "empty_prediction_photos": 0,
+  "scope": "val split; independent annotation references scored separately; no GT union"
+}

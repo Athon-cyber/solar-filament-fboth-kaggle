@@ -1,0 +1,55 @@
+{
+  "plan_id": "OPT-030-M2-SINGLE-REF-TOPOLOGY6",
+  "split_sha256": "5cf05c9b0c531d5901ad24cff1c99634d6dbf86ce3b9a9a944eb9ded894c0bf4",
+  "train_photos": 411,
+  "validation_photos": 148,
+  "internal_test_photos": 148,
+  "seed": 42,
+  "epochs": 80,
+  "physical_batch": 1,
+  "effective_batch": 36,
+  "planned_update_opportunities": 960,
+  "actual_updates_and_amp_skips_reported": true,
+  "original_training_run": "20261016-mask2former-single-ref039-v5-gpu1-train80",
+  "fresh_pretrained_for_each_formal": true,
+  "arms": {
+    "A": {
+      "loss": "native",
+      "augmentation": "original hflip only"
+    },
+    "B": {
+      "loss": "native",
+      "augmentation": "staged"
+    },
+    "C": {
+      "loss": "native + boundary weighted BCE .2",
+      "augmentation": "original hflip only"
+    },
+    "D": {
+      "loss": "native + instance softclDice .1",
+      "augmentation": "original hflip only"
+    },
+    "E": {
+      "loss": "native + boundary .2 + softclDice .1",
+      "augmentation": "original hflip only"
+    },
+    "F": {
+      "loss": "best C/D/E by best validationPQ; selected after all A-E complete",
+      "augmentation": "staged"
+    }
+  },
+  "extra_loss_schedule": "off epochs1-5, linear ramp epochs6-20, then fixed; probe/smoke full weight for gradient acceptance",
+  "topology_scope": "final decoder masks, Hungarian matched instances, native mask-logit grid with nearest GT resize, soft skeleton20 iterations; no unionGT; no enforced single component; smallGT disappearance must be audited",
+  "boundary_scope": "per-instance 3x3 dilation-minus-erosion ring, BCE weight5 on ring/1 elsewhere; background side includes GT gaps; not a separately learned boundary head",
+  "augmentation_schedule": "existing hflip plus vflip/rot90; intensity strength1 epochs1-40, .5 epochs41-65, .15 epochs66-80; contrast/gamma +/- .15s, offset +/- .05*255s, Gaussian sigma2s p.2s, mild3x3 blur p.15s; no crops/elastic/mosaic",
+  "inference_fixed": {
+    "confidence": 0.9,
+    "pixel": 0.5,
+    "nms_iou": 0.8,
+    "maxdet": 100,
+    "exclusive": true,
+    "tta": "none for primary sixarm comparison"
+  },
+  "selection": "max best-validation PQ, tie lowest merges then FN then FP then armname; no internaltest/publicscore tuning",
+  "final": "validation compare winner identity vs fixed3TTA; select onvalidation only, evaluate selected winner internaltest once, then180 competition CSV/RLE/nooverlap/localSHA export and report allsix metrics"
+}
