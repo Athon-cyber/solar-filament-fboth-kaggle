@@ -1,0 +1,29 @@
+{
+  "scope": "development-set report figures from historical predictions, no new inference",
+  "prediction_cache_sha256": "ab313bf2dfc32c2a25714a3f9723093814d28c8800139cbac3e26f28e8dc284f",
+  "per_reference_metrics_sha256": "188789c262ce28833d86d23be7096511f1796b5f95a3af766a98c722925ee521",
+  "figure_sha256": {
+    "examples.png": "155fa0d9c241bfdfa4c2de100f08a87447b709c5aaea94bfc96bd3cbc72a549b",
+    "overlap-distributions.png": "f15071acb9be29cef86b20da992d3dd4f58ba2667e536d97783899ab11640c5b"
+  },
+  "overlay_cases": [
+    {
+      "photo": "20110213093414Th.jpeg",
+      "reference": "010302-20110213093414Th",
+      "label": "Strong agreement"
+    },
+    {
+      "photo": "20131006075314Th.jpeg",
+      "reference": "010101-20131006075314Th",
+      "label": "Fragmentation"
+    },
+    {
+      "photo": "20150427162314Mh.jpeg",
+      "reference": "010403-20150427162314Mh",
+      "label": "Over-merging"
+    }
+  ],
+  "histogram_scope": "372 independent references across 148 development photos",
+  "union_dice_median": 0.7072311629345021,
+  "union_iou_median": 0.5470670011837595
+}

@@ -49,4 +49,4 @@ The final `0.90/0.40` configuration scored notebook PQ 0.459301 and strict micro
 
 ## Review before release
 
-The report draft uses the Kaggle/GitHub handle as temporary author text. Confirm the real author list, affiliations and contact details. Review permission to redistribute the model, report illustrations and repository contents before switching visibility. The final review also needs a clean CUDA run that rebuilds the submitted CSV and access checks for the public repository and weights.
+The report draft uses the GitHub handle as temporary author text. Confirm the real author list, affiliations and contact details. Review permission to redistribute the model, report illustrations and repository contents before switching visibility. The final review also needs a clean CUDA run that rebuilds the submitted CSV and access checks for the public repository and weights.

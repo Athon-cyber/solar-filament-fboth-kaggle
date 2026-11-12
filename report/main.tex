@@ -16,6 +16,7 @@ This report describes our solution to the Solar Filament Segmentation Challenge~
 This report goes over the details of our submitted solution to the Solar Filament Segmentation Challenge~2026 \cite{filament-segmentation-2026}. The challenge, launched on July~10,~2026, is organized by the Earth-Space AI Research (ESAIR) Lab\footnote{\href{https://www.esairlab.com/home}{www.esairlab.com/}}. This challenge utilizes the MAGFiLO dataset for evaluation of the segmentation algorithms \cite{ahmadzadeh2024dataset}.
 Our submission treats each filament as one instance. The experiments examine whether instance-specific boundary and topology terms improve the balance between missed and spurious masks, and whether combining predictions under image flips improves the resulting segmentation.
 
+\newpage
 \section{Methodology}\label{sec:methodology}
 \subsection{Data and model}
 We partitioned the 707 labeled photos by physical image into 411 training, 148 development, and 148 internal holdout photos. Training used the single-reference photos. The development and holdout sets retain 372 and 371 independent annotation references, respectively. We keep all references of a physical photo together and score each reference separately. We treat every annotated filament as the same foreground class. The official 180 test images are separate and supply only H-$\alpha$ image inputs at inference.
@@ -23,7 +24,7 @@ We partitioned the 707 labeled photos by physical image into 411 training, 148 d
 We use Mask2Former \cite{cheng2022mask2former} with a Swin-S backbone \cite{liu2021swin}, a multiscale deformable pixel decoder and 100 object queries. The model receives the full $2048\times2048$ frame. We decode each JPEG to grayscale, replicate it into three channels, and apply the model's input normalization. Each training arm starts from the same official COCO instance-segmentation initialization, adapting the classifier to one foreground class. The training procedure uses AdamW, a learning rate of $10^{-4}$, weight decay 0.05, and one image per step with gradient accumulation to an effective batch of 36. We train for 80 epochs with seed 42 and FP16 mixed precision, use cosine learning-rate decay to 1\% of the initial rate, and clip the gradient norm at 0.01.
 
 \subsection{Instance supervision}
-The base objective includes query classification, sampled binary mask loss and Dice loss with weights 2, 5 and 5, respectively. Native Hungarian assignment and auxiliary decoder losses are retained. The added terms operate on the final decoder masks for matched instances, using nearest-neighbor resizing of the reference mask to the mask-logit grid. For mask $Y$, we define a one-pixel morphological ring by a $3\times3$ dilation minus erosion and assign weight 5 to ring pixels and 1 elsewhere in binary cross entropy. Soft-clDice \cite{shit2021cldice} compares overlap of the differentiable skeletons and masks of each matched pair. We use 20 soft-skeleton iterations. The two terms have final weights 0.2 and 0.1. Both are zero in epochs 1--5, ramp linearly in epochs 6--20, and retain full weight thereafter.
+The base objective includes query classification, sampled binary mask loss and Dice loss with weights 2, 5 and 5, respectively. Native Hungarian assignment and auxiliary decoder losses are retained. The added terms operate on the final decoder masks for matched instances, using nearest-neighbor resizing of the reference mask to the mask-logit grid. They do not constrain predictions to a single connected component. For mask $Y$, we define a morphological boundary band by a $3\times3$ dilation minus erosion and assign weight 5 to ring pixels and 1 elsewhere in binary cross entropy. Soft-clDice \cite{shit2021cldice} compares overlap of the differentiable skeletons and masks of each matched pair. We use 20 soft-skeleton iterations. The two terms have final weights 0.2 and 0.1. Both are zero in epochs 1--5, ramp linearly in epochs 6--20, and retain full weight thereafter.
 
 \clearpage
 \subsection{Augmentation and model selection}
@@ -36,7 +37,8 @@ We run the same weights on the identity, horizontal-flip and vertical-flip views
 
 The exported CSV contains one row per predicted instance, with a unique identifier formed from the source image stem and an instance index. The second field is the compressed COCO RLE counts at native resolution. Images with zero predictions contribute no instance rows. The archived submission covers all 180 inference inputs, yields 1,112 rows, and has one empty prediction image. Its masks decode as nonempty $2048\times2048$ arrays, round-trip through RLE and have zero within-image overlaps.
 
-\begin{figure}[h]
+\newpage
+\par\medskip\noindent\begin{minipage}{\columnwidth}
 \centering
 \small
 \begin{tabular}{c}
@@ -52,16 +54,16 @@ $\downarrow$ \\
 $\downarrow$ \\
 \fbox{Mask NMS, exclusive ownership and COCO RLE}
 \end{tabular}
-\caption{Pipeline used to produce the submitted predictions.}
+\captionof{figure}{Pipeline used to produce the submitted predictions.}
 \label{fig:pipeline}
-\end{figure}
+\end{minipage}\par\medskip
 
-\begin{figure}[!ht]
+\par\medskip\noindent\begin{minipage}{\columnwidth}
 \centering
 \includegraphics[width=0.99\columnwidth]{examples.png}
-\caption{Saved OPT-031 predictions on three development images. Cyan outlines show one independent reference and amber outlines show predicted instances. The examples illustrate agreement, fragmentation and over-merging. TP/FP/FN are reference-specific strict matches.}
+\captionof{figure}{Saved OPT-031 predictions on three development images. Cyan outlines show one independent reference and amber outlines show predicted instances. The examples illustrate agreement, fragmentation and over-merging. TP/FP/FN are reference-specific strict matches.}
 \label{fig:examples}
-\end{figure}
+\end{minipage}\par\medskip
 
 \clearpage
 \section{Evaluation}\label{sec:evaluation}
@@ -90,6 +92,7 @@ F & E with staged augmentation & 80 & \textbf{0.445020} \\
 \end{tabular}
 \end{table}
 
+\newpage
 \subsection{Inference selection}
 With the F checkpoint, three-view inference at 0.90/0.50 raises development notebook PQ by 0.01052 to 0.45554. A subsequent photo-grouped five-fold threshold calibration selected 0.90/0.40 in all five folds. The pooled development notebook PQ is 0.45930, and the strict micro-PQ is 0.45910. Relative to 0.90/0.50, the notebook counts show 79 fewer false positives and 21 more false negatives. Fragmentation decreases from 63 to 52 and merges from 56 to 54. The 5,000-draw photo-clustered bootstrap gives a mean PQ gain of 0.00372 and a 95\% percentile interval of $[0.00038, 0.00711]$. This interval describes threshold variation on the development set with an already selected model and TTA method.
 
@@ -110,12 +113,12 @@ Holdout & 3 views 0.90/0.50 & 0.44601 & 777 & 937 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[!ht]
+\par\medskip\noindent\begin{minipage}{\columnwidth}
 \centering
 \includegraphics[width=.99\columnwidth]{overlap-distributions.png}
-\caption{Reference-level union Dice and IoU distributions for the submitted inference configuration on 148 development photos with 372 independent references. Dashed lines indicate medians.}
+\captionof{figure}{Reference-level union Dice and IoU distributions for the submitted inference configuration on 148 development photos with 372 independent references. Dashed lines indicate medians.}
 \label{fig:overlap}
-\end{figure}
+\end{minipage}\par\medskip
 
 \clearpage
 \subsection{Holdout and competition results}
@@ -131,6 +134,7 @@ Our ablation uses one split and seed. Checkpoint selection and inference calibra
 \subsection{Reproducibility}
 The artifact identifiers bind the report to the selected epoch and archived predictions. The original F checkpoint SHA-256 begins with \texttt{0f6d4bb62ecf}, and the submitted CSV SHA-256 begins with \texttt{67de28e92ba4}. The accompanying manifest gives the full digests, training run ID, inference parameters, and Kaggle submission ID. The inference entry point accepts the official test image directory and loads the frozen F weights directly. The validation script checks the complete input inventory, CSV structure, RLE round-trip and predicted overlap. It compares the generated CSV against the archived submitted CSV by SHA-256.
 
+\newpage
 \section{Acknowledgment}\label{sec:acknowledgment}
 The organization of the Filament Segmentation Challenge 2026 is partially supported by the U.S. National Science Foundation (NSF) under Grant No. 2209912 and 2433781, directorate for Computer and Information Science and Engineering (CSE), and Office of Advanced Cyberinfrastructure (OAC), and Grant No. 2511630, AST Division Of Astronomical Sciences and MPS Directorate for Mathematical and Physical Sciences.
 
